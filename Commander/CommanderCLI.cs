@@ -31,6 +31,12 @@ namespace Commander {
         public TextReader Reader { get; private set; }
 
         /// <summary>
+        /// A text writer to pipe reader output too
+        /// </summary>
+        public TextWriter Writer { get; set; }
+
+
+        /// <summary>
         /// New CommanderCLI using Console.In
         /// </summary>
         public CommanderCLI() :
@@ -95,7 +101,11 @@ namespace Commander {
             var thisArg = new StringBuilder();
 
             while (true) {
-                var thisChar = (char)Console.Read();
+                var thisCharVal = Reader.Read();
+                var thisChar = (char) thisCharVal;
+                if (thisCharVal != -1 && Writer != null) {
+                    Writer.Write(thisChar);
+                }
 
                 // Escaped characters are added to buffer before additional processing
                 if (escapeEnabled) {
