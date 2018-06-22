@@ -33,7 +33,34 @@ namespace Commander {
         /// <summary>
         /// A text writer to pipe reader output too
         /// </summary>
-        public TextWriter Writer { get; set; }
+        [Obsolete]
+        public TextWriter Writer {
+            get {
+                return Writers.Count > 0 ? Writers[0] : null;
+            }
+            set {
+                if (value == null) {
+                    Writers.Clear();
+                    return;
+                }
+
+                Writers.Clear();
+                Writers.Add(value);
+            }
+        }
+
+        private List<TextWriter> _writers;
+        /// <summary>
+        /// Text Writer list to pipe reader output too
+        /// </summary>
+        public List<TextWriter> Writers {
+            get {
+                if (_writers == null) {
+                    _writers = new List<TextWriter>();
+                }
+                return _writers;
+            }
+        }
 
 
         /// <summary>
@@ -103,8 +130,10 @@ namespace Commander {
             while (true) {
                 var thisCharVal = Reader.Read();
                 var thisChar = (char) thisCharVal;
-                if (thisCharVal != -1 && Writer != null) {
-                    Writer.Write(thisChar);
+
+                // Writer Output
+                if (thisCharVal != -1) {
+                    Writers.ForEach(writer => writer.Write(thisChar));
                 }
 
                 // Escaped characters are added to buffer before additional processing
