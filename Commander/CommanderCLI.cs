@@ -31,6 +31,44 @@ namespace Commander {
         public TextReader Reader { get; private set; }
 
         /// <summary>
+        /// Returns the StringBuilder for the last command as raw
+        /// </summary>
+        public StringBuilder LastCommandAsRaw;
+
+        /// <summary>
+        /// A text writer to pipe reader output too
+        /// </summary>
+        [Obsolete]
+        public TextWriter Writer {
+            get {
+                return Writers.Count > 0 ? Writers[0] : null;
+            }
+            set {
+                if (value == null) {
+                    Writers.Clear();
+                    return;
+                }
+
+                Writers.Clear();
+                Writers.Add(value);
+            }
+        }
+
+        private List<TextWriter> _writers;
+        /// <summary>
+        /// Text Writer list to pipe reader output too
+        /// </summary>
+        public List<TextWriter> Writers {
+            get {
+                if (_writers == null) {
+                    _writers = new List<TextWriter>();
+                }
+                return _writers;
+            }
+        }
+
+
+        /// <summary>
         /// New CommanderCLI using Console.In
         /// </summary>
         public CommanderCLI() :
@@ -53,6 +91,7 @@ namespace Commander {
         /// <param name="flags">TextReader Read Operation Flags</param>
         /// <returns></returns>
         public bool ReadLine(out string[] args, out string[] flags) {
+            LastCommandAsRaw = new StringBuilder();
 
             // Args List / Flags List
             var argsList = new List<string>();
@@ -95,7 +134,14 @@ namespace Commander {
             var thisArg = new StringBuilder();
 
             while (true) {
-                var thisChar = (char)Console.Read();
+                var thisCharVal = Reader.Read();
+                var thisChar = (char) thisCharVal;
+
+                // Writer Output
+                if (thisCharVal != -1) {
+                    Writers.ForEach(writer => writer.Write(thisChar));
+                    LastCommandAsRaw.Append(thisChar);
+                }
 
                 // Escaped characters are added to buffer before additional processing
                 if (escapeEnabled) {
