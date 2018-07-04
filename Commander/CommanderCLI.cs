@@ -31,6 +31,11 @@ namespace Commander {
         public TextReader Reader { get; private set; }
 
         /// <summary>
+        /// Returns the StringBuilder for the last command as raw
+        /// </summary>
+        public StringBuilder LastCommandAsRaw;
+
+        /// <summary>
         /// A text writer to pipe reader output too
         /// </summary>
         [Obsolete]
@@ -86,6 +91,7 @@ namespace Commander {
         /// <param name="flags">TextReader Read Operation Flags</param>
         /// <returns></returns>
         public bool ReadLine(out string[] args, out string[] flags) {
+            LastCommandAsRaw = new StringBuilder();
 
             // Args List / Flags List
             var argsList = new List<string>();
@@ -134,6 +140,7 @@ namespace Commander {
                 // Writer Output
                 if (thisCharVal != -1) {
                     Writers.ForEach(writer => writer.Write(thisChar));
+                    LastCommandAsRaw.Append(thisChar);
                 }
 
                 // Escaped characters are added to buffer before additional processing
