@@ -5,7 +5,9 @@ using System.Linq;
 namespace CommanderTests {
     class Program {
         static void Main(string[] startArgs) {
-            var commander = new CommanderCLI();
+            var commander = new CommanderCLI() {
+                ParseUnescapedNullsAsNull = true
+            };
             string prefix = "commander> ";
 
             Console.Write(prefix);

@@ -26,6 +26,11 @@ namespace Commander {
         }
 
         /// <summary>
+        /// If True, an unescaped "Null" argument will passed as null
+        /// </summary>
+        public bool ParseUnescapedNullsAsNull { get; set; }
+
+        /// <summary>
         /// The TextReader
         /// </summary>
         public TextReader Reader { get; private set; }
@@ -102,6 +107,11 @@ namespace Commander {
             bool saveArg() {
                 bool exit = ReadArg(out string arg, out bool stringReadingUsed);
 
+                if (ParseUnescapedNullsAsNull && arg.ToLower() == "null" && !stringReadingUsed) {
+                    argsList.Add(null);
+                    return exit;
+                }
+
                 // Support flags if, matches flag format and stringReading was not used
                 if (arg.Length > 2 && arg.StartsWith("--") && ReadFlags
                     && !stringReadingUsed) {
@@ -122,7 +132,7 @@ namespace Commander {
             flags = flagsList.ToArray();
 
             // Return false if first argument is exit
-            return args.Length < 1 || args[0].ToLower() != "exit";
+            return args.Length < 1 || args[0]?.ToLower() != "exit";
         }
 
         protected bool ReadArg(out string arg, out bool stringReadingUsed) {
