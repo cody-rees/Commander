@@ -7,6 +7,10 @@
     <Authors>Cody Rees</Authors>
     <Company />
     <Product>Commander CLI Utilities</Product>
+    <RepositoryUrl>https://github.com/slipswhitley/Commander</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>Command line argument parsing utility for building out command line applications with potentially complex input</Description>
+    <Copyright>Cody Rees © All rights reserved</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
